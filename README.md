@@ -62,6 +62,14 @@ in migration default will be added test admin user:
     password: admin
 ```
 
+before run application you should give permissions:
+
+```
+    sudo chown $USER:www-data -R web/assets
+    sudo chown $USER:www-data -R runtime/
+    sudo chown $USER:www-data -R web/uploads/
+```
+
 You can then access the application through the following URL:
 
     http://127.0.0.1:8080
