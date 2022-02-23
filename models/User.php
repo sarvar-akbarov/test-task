@@ -2,9 +2,7 @@
 
 namespace app\models;
 
-use yii\db\ActiveRecord;
-
-class User extends ActiveRecord implements \yii\web\IdentityInterface
+class User extends  \app\modules\user\models\User implements \yii\web\IdentityInterface
 {
     /**
      * {@inheritdoc}
@@ -46,7 +44,7 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
      */
     public function getAuthKey()
     {
-        return $this->authKey;
+        return $this->auth_key;
     }
 
     /**

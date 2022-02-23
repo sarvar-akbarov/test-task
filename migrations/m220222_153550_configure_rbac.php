@@ -1,5 +1,6 @@
 <?php
 
+use app\modules\user\models\User;
 use yii\db\Migration;
 
 /**
@@ -24,9 +25,14 @@ class m220222_153550_configure_rbac extends Migration
         $manageUsers->description = 'Manage users';
         $auth->add($manageUsers);
 
+        $user = $auth->createRole('user');
+        $user->description = 'User';
+        $auth->add($user);
+
         $moderator = $auth->createRole('moderator');
         $moderator->description = 'Moderator';
         $auth->add($moderator);
+        $auth->addChild($moderator, $user);
         $auth->addChild($moderator, $manageArticles);
 
         $admin = $auth->createRole('admin');
@@ -36,7 +42,11 @@ class m220222_153550_configure_rbac extends Migration
         $auth->addChild($admin, $manageUsers);
         
         // create user that has admin rights
-        $user = new \app\models\User([
+
+        $this->delete('{{%user}}', ['id' => 1000]);
+
+        $this->insert('{{%user}}', [
+            'id' => 1000,
             'username' => 'admin',
             'password_hash' => \Yii::$app->security->generatePasswordHash('admin'),
             'auth_key' => \Yii::$app->security->generateRandomString(),
@@ -45,9 +55,7 @@ class m220222_153550_configure_rbac extends Migration
             'status' => 10
         ]);
 
-        $user->save(false);
-
-        $auth->assign($admin, $user->id);
+        $auth->assign($admin, User::findOne(1000)->id);
     }
 
     /**
