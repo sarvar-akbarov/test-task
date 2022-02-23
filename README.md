@@ -45,25 +45,17 @@ INSTALLATION
 
 ### Install with Docker
 
-Update your vendor packages
-
-    docker-compose run --rm php composer update --prefer-dist
-    
-Run the installation triggers (creating cookie validation code)
-
-    docker-compose run --rm php composer install    
-    
-Start the container
+Build and Start the container
 
     docker-compose up -d
-    
-You can then access the application through the following URL:
 
-    http://127.0.0.1:8080
+Enter inside container
 
-**NOTES:** 
-- Minimum required Docker engine version `20.10.12` for development (see [Performance tuning for volume mounts](https://docs.docker.com/docker-for-mac/osxfs-caching/))
-- The default configuration uses a host-volume in your home directory `.docker-composer` for composer caches
+    docker exec -it test-task-php sh
+
+Install all requirement libraries
+
+    composer install
 
 
 CONFIGURATION
@@ -83,10 +75,24 @@ return [
 ];
 ```
 
-run  `php yii migrate` inside your dokcer container 
+Run migration
+
+    php yii migrate
 
 in migration default will be added test admin user:
 ```
     username: admin
     password: admin
 ```
+
+You can then access the application through the following URL:
+
+    http://127.0.0.1:8080
+
+**NOTES:** 
+- Minimum required Docker engine version `20.10.12` for development (see [Performance tuning for volume mounts](https://docs.docker.com/docker-for-mac/osxfs-caching/))
+- The default configuration uses a host-volume in your home directory `.docker-composer` for composer caches
+
+
+
+
