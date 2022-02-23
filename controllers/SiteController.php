@@ -8,7 +8,8 @@ use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\ContactForm;
+use app\models\Posts;
+use app\models\SignupForm;
 
 class SiteController extends Controller
 {
@@ -19,7 +20,7 @@ class SiteController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'only' => ['logout'],
                 'rules' => [
                     [
@@ -30,7 +31,7 @@ class SiteController extends Controller
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -59,9 +60,30 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($page = 0)
     {
-        return $this->render('index');
+        $posts = Posts::getList($page);
+
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return [
+                'result' => count($posts) > 0,
+                'content' => $this->renderAjax('_posts', ['posts' => $posts])
+            ];
+        }
+        
+        return $this->render('index', ['posts' => $posts]);
+    }
+
+    /**
+     *
+     * @param integer $id
+     * @return string
+     */
+    public function actionPost(int $id):string
+    {
+        $post = Posts::getOne($id);
+            return $this->render('post', ['post' => $post]);
     }
 
     /**
@@ -87,6 +109,30 @@ class SiteController extends Controller
     }
 
     /**
+     * Signup action.
+     *
+     * @return Response|string
+     */
+    public function actionSignup()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new SignupForm();
+        if ($model->load(Yii::$app->request->post()) && $user = $model->signup()) {
+            Yii::$app->session->setFlash('Congratulation. You registered successfully!');
+            Yii::$app->user->login($user, 3600*24*30);
+            return $this->goBack();
+        }
+
+        $model->password = '';
+        return $this->render('signup', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
      * Logout action.
      *
      * @return Response
@@ -96,33 +142,5 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
-    }
-
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
     }
 }

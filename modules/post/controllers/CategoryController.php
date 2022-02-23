@@ -1,17 +1,16 @@
 <?php
 
-namespace app\modules\user\controllers;
+namespace app\modules\post\controllers;
 
 use Yii;
-use app\modules\user\models\Search;
 use yii\web\Controller;
 use yii\filters\AccessControl;
-use app\modules\user\forms\UserForm;
-use app\modules\user\models\User;
+use app\modules\post\models\Category;
+use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 
-class DefaultController extends Controller
+class CategoryController extends Controller
 {
     public function behaviors()
     {
@@ -21,7 +20,7 @@ class DefaultController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['manageUsers'],
+                        'roles' => ['admin'],
                     ],
                 ],
             ],
@@ -36,26 +35,25 @@ class DefaultController extends Controller
 
     public function actionIndex()
     {
-        $searchModel = new Search();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = new ActiveDataProvider([
+            'query' => Category::find() 
+        ]);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
-            'searchModel' => $searchModel
         ]);
     }
 
     /**
-     * Create User
+     * Create Category
      *
      */
     public function actionCreate()
     {
-        $model = new UserForm();
+        $model = new Category();
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $user = User::create($model);
-            return $this->redirect(['view', 'id' => $user->id]);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
         }
 
         return $this->render('create', [
@@ -83,12 +81,10 @@ class DefaultController extends Controller
      */
     public function actionUpdate(int $id)
     {
-        $user = $this->_findModel($id);
-        $model = new UserForm($user);
+        $model = $this->_findModel($id);
         
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $user->edit($model);
-            return $this->redirect(['view', 'id' => $user->id]);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
         }
 
         return $this->render('update', [
@@ -112,13 +108,13 @@ class DefaultController extends Controller
     /**
      *
      * @param integer $id
-     * @return User
+     * @return Category
      * @throw NotFoundHttpException
      */
-    protected function _findModel(int $id): User
+    protected function _findModel(int $id): Category
     {
-        if ($user = User::findOne($id)) {
-            return $user;
+        if ($category = Category::findOne($id)) {
+            return $category;
         }
 
         throw new NotFoundHttpException('The requested page does not exist');

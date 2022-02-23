@@ -12,6 +12,7 @@ class ProfileForm extends Model
     const SCENARIO_CREATE = 'sc_creete';
 
     public $username;
+    public $email;
     public $password;
     public $image;
 
@@ -23,6 +24,7 @@ class ProfileForm extends Model
 
         if ($user != null) {
             $this->username = $user->username;
+            $this->email = $user->email;
             $this->image = $user->image;
         }else{
             $this->scenario = self::SCENARIO_CREATE;
@@ -34,7 +36,7 @@ class ProfileForm extends Model
     public function scenarios()
     {
         $scenarios = parent::scenarios();
-        $scenarios[self::SCENARIO_CREATE] = ['username', 'password', 'image', 'status', 'role'];
+        $scenarios[self::SCENARIO_CREATE] = ['username', 'password', 'image', 'status', 'role', 'email'];
         return $scenarios;
     }
 
@@ -42,8 +44,14 @@ class ProfileForm extends Model
     public function rules()
     {
         return [
-            [['username'], 'required'],
+            [['username', 'email'], 'required'],
             [['password'], 'required', 'on' => self::SCENARIO_CREATE],
+            
+            [['email'], 'trim'],
+            ['email', 'email'],
+            [['email'], 'string', 'max' => 255, 'min' => 3],
+            
+            [['username', 'email'], 'unique', 'targetClass' => User::class, 'filter' => ['<>', 'id', $this->_user?->id]],
 
             [['username', 'password'], 'trim'],
             [['username', 'password'], 'string', 'max' => 255],

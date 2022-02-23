@@ -24,10 +24,13 @@ $this->params['breadcrumbs'][] = $this->title;
         <div id="image">
             <?=Html::img($model->getImage(),['width' => '200px'])?>
         </div>
-        <?= $form->field($model, 'image')->fileInput() ?>
+        <br>
+        <br>
+        <?= $form->field($model, 'image')->fileInput()->label(false) ?>
     </div>
     <div class="col-md-4">
         <?= $form->field($model, 'username') ?>
+        <?= $form->field($model, 'email') ?>
         <?= $form->field($model, 'password')->label('New password') ?>
         <?= Html::submitButton('Saqlash', ['class' => 'btn btn-success']) ?>
     </div>

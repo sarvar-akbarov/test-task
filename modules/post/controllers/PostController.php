@@ -1,17 +1,17 @@
 <?php
 
-namespace app\modules\user\controllers;
+namespace app\modules\post\controllers;
 
 use Yii;
-use app\modules\user\models\Search;
+use app\modules\post\models\Search;
 use yii\web\Controller;
 use yii\filters\AccessControl;
-use app\modules\user\forms\UserForm;
-use app\modules\user\models\User;
+use app\modules\post\forms\PostForm;
+use app\modules\post\models\Post;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 
-class DefaultController extends Controller
+class PostController extends Controller
 {
     public function behaviors()
     {
@@ -21,7 +21,22 @@ class DefaultController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['manageUsers'],
+                        'actions' => ['index', 'view', 'create'],
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['update', 'delete'],
+                        // so'rab olish kerak nimaga unaqa bo'ldi? 
+                        'roles' => ['updatePost', 'manageArticles'],
+                        'roleParams' => function() {
+                            return ['post' => Post::findOne(['id' => Yii::$app->request->get('id')])];
+                        },
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete', 'publish'],
+                        'roles' => ['manageArticles'],
                     ],
                 ],
             ],
@@ -46,16 +61,16 @@ class DefaultController extends Controller
     }
 
     /**
-     * Create User
+     * Create Post
      *
      */
     public function actionCreate()
     {
-        $model = new UserForm();
+        $model = new PostForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $user = User::create($model);
-            return $this->redirect(['view', 'id' => $user->id]);
+            $post = Post::create($model);
+            return $this->redirect(['view', 'id' => $post->id]);
         }
 
         return $this->render('create', [
@@ -64,7 +79,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * View User
+     * View Post
      *
      * @param integer $id
      * @return string
@@ -77,18 +92,20 @@ class DefaultController extends Controller
     }
 
     /**
-     * Update User
+     * Update Post
      *
      * @param integer $id
      */
     public function actionUpdate(int $id)
     {
-        $user = $this->_findModel($id);
-        $model = new UserForm($user);
+
+        $post = $this->_findModel($id);
+
+        $model = new PostForm($post);
         
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $user->edit($model);
-            return $this->redirect(['view', 'id' => $user->id]);
+            $post->edit($model);
+            return $this->redirect(['view', 'id' => $id]);
         }
 
         return $this->render('update', [
@@ -97,7 +114,7 @@ class DefaultController extends Controller
     }   
 
     /**
-     * Delete User
+     * Delete Post
      *
      * @param integer $id
      * @return void
@@ -112,13 +129,13 @@ class DefaultController extends Controller
     /**
      *
      * @param integer $id
-     * @return User
+     * @return Post
      * @throw NotFoundHttpException
      */
-    protected function _findModel(int $id): User
+    protected function _findModel(int $id): Post
     {
-        if ($user = User::findOne($id)) {
-            return $user;
+        if ($post = Post::findOne($id)) {
+            return $post;
         }
 
         throw new NotFoundHttpException('The requested page does not exist');

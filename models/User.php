@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\modules\user\forms\UserForm;
+
 class User extends  \app\modules\user\models\User implements \yii\web\IdentityInterface
 {
     /**
@@ -11,7 +13,7 @@ class User extends  \app\modules\user\models\User implements \yii\web\IdentityIn
     {
         return self::findOne($id);
     }
-
+    
     /**
      * {@inheritdoc}
      */
@@ -28,7 +30,7 @@ class User extends  \app\modules\user\models\User implements \yii\web\IdentityIn
      */
     public static function findByUsername($username)
     {
-        return self::find()->where(['username' => $username])->one();
+        return self::find()->where(['username' => $username, 'status' => UserForm::STATUS_ACTIVE])->one();
     }
 
     /**

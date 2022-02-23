@@ -64,17 +64,15 @@ class ProfileController extends Controller
     /**
      * Update User
      *
-     * @return string
      */
-    public function actionEdit(): string
+    public function actionEdit()
     {
         $user = $this->_findModel($this->_user_id);
         $model = new UserForm($user);
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $user->edit($model);
-
-            return $this->render('view', ['model' => $user]);
+            return $this->redirect(['view']);
         }
 
         return $this->render('edit', [

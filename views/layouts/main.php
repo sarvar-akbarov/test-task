@@ -38,8 +38,8 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav'],
         'items' => [
             ['label' => 'Users', 'url' => ['/user/default/index'], 'visible' => \Yii::$app->user->can('manageUsers')],
-            ['label' => 'Posts', 'url' => ['/site/about']],
-            ['label' => 'Categories', 'url' => ['/site/contact']],
+            ['label' => 'Create Post', 'url' => ['/post/post']],
+            ['label' => 'Categories', 'url' => ['/post/category'], 'visible' => \Yii::$app->user->can('admin')],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
             ) : (

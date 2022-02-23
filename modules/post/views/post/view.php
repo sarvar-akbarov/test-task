@@ -1,13 +1,14 @@
 <?php
 
-use app\modules\user\models\User;
+use app\modules\post\models\Post;
 use yii\helpers\Html;
+use yii\helpers\HtmlPurifier;
 use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\user\forms\UserCreateForm */
 
-$this->title = 'Foydalanuvchi';
-$this->params['breadcrumbs'][] = ['label' => 'Foydalanuvchilar', 'url' => 'index'];
+$this->title = 'Posts';
+$this->params['breadcrumbs'][] = ['label' => 'Posts', 'url' => 'index'];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
@@ -20,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?=Html::a('Delete', ['delete', 'id' => $model->id], [
         'class' => 'btn btn-danger',
         'data' => [
-            'confirm' => 'Rostdan ham ushbu foydalanuvchini o\'chirmoqchimisiz?',
+            'confirm' => 'Are you sure?',
             'method' => 'post',
         ],
     ])?>
@@ -30,20 +31,36 @@ $this->params['breadcrumbs'][] = $this->title;
     'model' => $model,
     'attributes' => [
         [
-            'attribute' => 'image', 
+            'attribute' => 'preview_img', 
             'format' => 'html',
-            'value' => function(User $model){
+            'value' => function(Post $model){
                 return Html::img($model->getImage(),['width' => '200px']);
             }
         ],
-        'username',
-        'email',
+        'title',
         [
-            'label' => 'Role',
+            'attribute' => 'category_id',
             'value' => function($model){
-                return $model->getRoleDescription();
-            }
+                return $model->categoryName;
+            },
         ],
+        
+    ]
+])?>
+
+<p>
+    <?=Html::encode($model->short)?>
+</p>
+
+<p>
+    <?=HtmlPurifier::process($model->content)?>
+</p>
+
+
+<?= DetailView::widget([
+    'model' => $model,
+    'attributes' => [
+        'author.username',
         'created_at:datetime',
         'updated_at:datetime',
         [
@@ -54,4 +71,3 @@ $this->params['breadcrumbs'][] = $this->title;
         ]
     ]
 ])?>
-

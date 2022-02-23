@@ -23,6 +23,13 @@ class User extends ActiveRecord
         return "{{%user}}";
     }
 
+    public function rules()
+    {
+        return [
+
+        ];
+    }
+    
     public function behaviors()
     {
         return [
@@ -76,6 +83,7 @@ class User extends ActiveRecord
         $model = new self;
         $model->username = $user->username;
         $model->setPassword($user->password);
+        $model->email = $user->email;
         $model->status = $user->status;
         $model->role = $user->role;
         $model->setImage($user->image);
@@ -95,6 +103,7 @@ class User extends ActiveRecord
     {
         $this->username = $user->username;
         $this->setPassword($user->password);
+        $this->email = $user->email;
         $this->status = $user->status ?? null;
         $this->role = $user->role ?? null;
         $this->setImage($user->image);

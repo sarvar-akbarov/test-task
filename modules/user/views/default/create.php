@@ -24,6 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $form->field($model, 'username') ?>
 
+    <?= $form->field($model, 'email') ?>
+
     <?= $form->field($model, 'password') ?>
 
     <?= $form->field($model, 'role')->dropDownList(UserForm::getRoleList(), ['prompt' => 'Select']) ?>
