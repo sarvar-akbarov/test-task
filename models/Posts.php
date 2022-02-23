@@ -7,7 +7,7 @@ use Yii;
 
 class Posts
 {
-    const PER_PAGE = 1;
+    const PER_PAGE = 10;
 
     /**
      * get post list
